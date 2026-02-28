@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "start": "node server.js",
+    "build": "prisma generate",
+    "dev": "nodemon server.js"
+  },
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "@sentry/node": "^10.39.0",
