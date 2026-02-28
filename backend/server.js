@@ -42,6 +42,7 @@ app.use(cors({
       process.env.FRONTEND_URL,
       'https://abonelik-kappa.vercel.app',
       'https://frontend-ten-pink-85.vercel.app',
+      'https://subtrack-eta.vercel.app',
       'http://localhost:3000',
       'http://localhost:3001',
       'http://127.0.0.1:3001'
