@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  password          String?
+  name              String?
+  isEmailVerified   Boolean  @default(false)
+  isAdmin           Boolean  @default(false)
+  onboardingComplete Boolean @default(false)
+  currency          String   @default("TRY") // TRY, USD, EUR
+  monthlyBudget     Decimal?  @db.Decimal(12, 2)
+  language          String   @default("tr") // tr, en
+  theme             String   @default("dark") // dark, light
+  verificationToken String?  @unique
+  verificationTokenExpiresAt DateTime?
+  resetToken        String?  @unique
+  resetTokenExpiry  DateTime?
+  googleId          String?  @unique
+  createdAt         DateTime @default(now())
+  subscriptions     Subscription[]
+  pushSubscriptions PushSubscription[]
+}
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @db.Text
+  keys      Json     // Stores p256dh and auth keys
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Subscription {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  price           Decimal   @db.Decimal(12, 2)
+  currency        String   @default("TRY")
+  billingCycle    String   // MONTHLY, YEARLY
+  startDate       DateTime
+  nextPaymentDate DateTime
+  status          String   @default("ACTIVE") // ACTIVE, CANCELLED
+  invoices        Invoice[]
+}
+
+model Invoice {
+  id             Int      @id @default(autoincrement())
+  subscriptionId Int
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  amount         Decimal   @db.Decimal(12, 2)
+  dueDate        DateTime
+  status         String   @default("PENDING") // PAID, PENDING, OVERDUE
+  paidAt         DateTime?
+}
+
