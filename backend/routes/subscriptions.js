@@ -25,7 +25,9 @@ router.post('/', auth, validate(subscriptionSchema), async (req, res) => {
         const { name, price, currency, billingCycle, startDate } = req.body;
 
         let nextPayment = new Date(startDate);
-        if (billingCycle === 'MONTHLY') {
+        if (billingCycle === 'WEEKLY') {
+            nextPayment.setDate(nextPayment.getDate() + 7);
+        } else if (billingCycle === 'MONTHLY') {
             nextPayment.setMonth(nextPayment.getMonth() + 1);
         } else if (billingCycle === 'YEARLY') {
             nextPayment.setFullYear(nextPayment.getFullYear() + 1);
@@ -99,7 +101,9 @@ router.put('/:id', auth, validate(subscriptionSchema), async (req, res) => {
         const { name, price, currency, billingCycle, startDate } = req.body;
 
         let nextPayment = new Date(startDate);
-        if (billingCycle === 'MONTHLY') {
+        if (billingCycle === 'WEEKLY') {
+            nextPayment.setDate(nextPayment.getDate() + 7);
+        } else if (billingCycle === 'MONTHLY') {
             nextPayment.setMonth(nextPayment.getMonth() + 1);
         } else if (billingCycle === 'YEARLY') {
             nextPayment.setFullYear(nextPayment.getFullYear() + 1);

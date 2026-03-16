@@ -26,12 +26,20 @@ function AuthCallbackContent() {
             return;
         }
 
+        // OAuth flow: backend already set httpOnly cookie, no token in URL
         if (!tokenParam) {
-            router.replace('/login?error=missing_params');
+            api.get('/users/profile')
+                .then((response) => {
+                    login(response.data);
+                })
+                .catch(() => {
+                    setError('Giriş işlemi başarısız oldu. Lütfen tekrar deneyin.');
+                    setTimeout(() => router.replace('/login?error=auth_callback_failed'), 2000);
+                });
             return;
         }
 
-        // Set cookie via a backend endpoint, then fetch profile
+        // Token in URL (e.g. legacy or set-token flow): set cookie via backend then fetch profile
         api.post('/auth/set-token', { token: tokenParam })
             .then(() => api.get('/users/profile'))
             .then((response) => {
