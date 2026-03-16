@@ -48,10 +48,18 @@ router.get('/users', auth, adminOnly, async (req, res) => {
 router.delete('/users/:id', auth, adminOnly, async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
+        if (isNaN(userId)) {
+            return res.status(400).json({ message: 'Geçersiz ID' });
+        }
 
         // Can't delete yourself
         if (userId === req.user.userId) {
             return res.status(400).json({ message: 'Kendinizi silemezsiniz' });
+        }
+
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            return res.status(404).json({ message: 'Kullanıcı bulunamadı' });
         }
 
         // Delete user's subscriptions first
@@ -75,6 +83,9 @@ router.delete('/users/:id', auth, adminOnly, async (req, res) => {
 router.patch('/users/:id/admin', auth, adminOnly, async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
+        if (isNaN(userId)) {
+            return res.status(400).json({ message: 'Geçersiz ID' });
+        }
 
         // Can't change your own admin status
         if (userId === req.user.userId) {
@@ -111,6 +122,14 @@ router.patch('/users/:id/admin', auth, adminOnly, async (req, res) => {
 router.patch('/users/:id/verify', auth, adminOnly, async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
+        if (isNaN(userId)) {
+            return res.status(400).json({ message: 'Geçersiz ID' });
+        }
+
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            return res.status(404).json({ message: 'Kullanıcı bulunamadı' });
+        }
 
         await prisma.user.update({
             where: { id: userId },

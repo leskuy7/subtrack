@@ -450,7 +450,7 @@ router.get('/google/callback', async (req, res) => {
 
         logger.info('[Google OAuth] Success! Redirecting to frontend');
         res.cookie('auth_token', token, getAuthCookieOptions());
-        res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+        res.redirect(`${frontendUrl}/auth/callback`);
     } catch (error) {
         logger.error({ err: error }, '[Google OAuth] Callback error');
         res.redirect(`${frontendUrl}/login?error=google_failed`);

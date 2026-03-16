@@ -14,7 +14,7 @@ cd backend
 npm install  # İlk kurulumda
 node server.js
 ```
-Backend **http://localhost:5000** adresinde çalışacaktır.
+Backend **http://localhost:5000** adresinde çalışacaktır. Yerel çalıştırmak için `backend/.env` içinde en azından `JWT_SECRET` ve `DATABASE_URL` tanımlı olmalıdır.
 
 ### 2. Frontend (Arayüz)
 Kullanıcı arayüzünü sağlar.
@@ -25,6 +25,23 @@ npm install  # İlk kurulumda
 npm run dev
 ```
 Frontend **http://localhost:3000** (veya 3001) adresinde çalışacaktır.
+
+## Ortam Değişkenleri (Backend)
+
+Production ve deploy için backend ortam değişkenleri:
+
+| Değişken | Zorunlu | Açıklama |
+|----------|---------|----------|
+| `JWT_SECRET` | Evet | JWT imzalama için gizli anahtar. Tanımsızsa sunucu başlamaz. |
+| `DATABASE_URL` | Evet | PostgreSQL bağlantı dizesi. |
+| `FRONTEND_URL` | Evet (prod) | Frontend kök URL (örn. `https://subtrack-eta.vercel.app`). |
+| `BACKEND_URL` | Evet (prod) | Backend kök URL (OAuth callback için). |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth için | Google ile giriş için. |
+| **`RESEND_API_KEY`** | E-posta için | [Resend](https://resend.com) API anahtarı. E-posta gönderimi bu API ile yapılır. |
+| **`EMAIL_USER`** | E-posta için | Gönderen adresi (Resend’de doğrulanmış domain olmalı). Varsayılan: `onboarding@resend.dev`. |
+| `EMAIL_PASS` | Hayır | E-posta servisi Resend API kullandığı için production’da kullanılmaz; sadece test/legacy script’lerde geçer. |
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Bildirimler için | Web Push (bildirim) için. |
+| `SENTRY_DSN` | Hayır | Hata izleme (Sentry). |
 
 ## Test Kullanıcısı
 Geliştirme ortamında seed kullanmak isterseniz `backend/prisma/seed.js` dosyası sadece dev ortamında çalışır. Gerekli ortam değişkenleri:
