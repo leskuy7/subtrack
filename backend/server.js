@@ -19,7 +19,7 @@ if (process.env.SENTRY_DSN) {
   });
   logger.info('Sentry initialized');
 } else {
-  logger.warn('SENTRY_DSN not set \u2014 Sentry disabled');
+  logger.warn('SENTRY_DSN not set - Sentry disabled');
 }
 
 const app = express();
@@ -47,7 +47,6 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
 
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 app.use(helmet({
@@ -58,7 +57,7 @@ app.use(helmet({
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: { message: 'Too many requests. Try again in 15 minutes.' },
+  message: { message: 'Cok fazla istek gonderdiniz. Lutfen 15 dakika sonra tekrar deneyin.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -66,7 +65,7 @@ const generalLimiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: { message: 'Too many login attempts. Try again in 15 minutes.' },
+  message: { message: 'Cok fazla giris denemesi. Lutfen 15 dakika sonra tekrar deneyin.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -74,7 +73,7 @@ const authLimiter = rateLimit({
 const emailLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 3,
-  message: { message: 'Too many emails. Try again in 1 hour.' },
+  message: { message: 'Cok fazla e-posta gonderimi. Lutfen 1 saat sonra tekrar deneyin.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
