@@ -29,11 +29,8 @@ const PORT = process.env.PORT || 5000;
 // Trust first proxy (Render, Vercel, etc.) for correct IP in rate limiting
 app.set('trust proxy', 1);
 
-// Security Middleware
-app.use(helmet()); // Güvenlik başlıkları (XSS, clickjacking vb.)
-
-// CORS - sadece izin verilen origin'ler
-app.use(cors({
+// CORS - sadece izin verilen origin'ler (helmet'tan ÖNCE olmalı)
+const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
@@ -44,7 +41,7 @@ app.use(cors({
       'http://localhost:3000',
       'http://localhost:3001',
       'http://127.0.0.1:3001'
-    ];
+    ].filter(Boolean);
 
     // Also allow any vercel.app preview deployments for this project
     if (origin.endsWith('.vercel.app') || allowedOrigins.indexOf(origin) !== -1) {
@@ -54,7 +51,19 @@ app.use(cors({
     const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
     return callback(new Error(msg), false);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+// Preflight (OPTIONS) isteklerini tüm route'lar için aç
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
+
+// Security Middleware (CORS'tan SONRA)
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: false,
 }));
 
 // Rate Limiting - DDoS ve brute force koruması
