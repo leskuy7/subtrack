@@ -69,7 +69,9 @@ export default function AdminPage() {
             try {
                 await api.delete(`/admin/users/${id}`);
                 setUsers(users.filter(u => u.id !== id));
-                fetchData();
+                if (stats) {
+                    setStats({ ...stats, totalUsers: stats.totalUsers - 1 });
+                }
             } catch (err: any) {
                 alert(err.response?.data?.message || 'Silinemedi');
             }

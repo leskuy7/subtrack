@@ -80,27 +80,22 @@ export default function CalendarPage() {
     ];
 
     const getSubscriptionsForDay = (day: number) => {
-        // Calculate dynamic payment dates for subscriptions based on billing cycle
-        // This is a simplified view. Ideally backend handles projection of recurring dates.
-        // For now, we show the static 'nextPaymentDate' and maybe 'startDate' if it matches?
-        // Actually, user wants to see "Payment Dates". 
-        // If a sub is Monthly, it should appear on that day every month.
+        const targetDate = new Date(currentYear, currentMonth, day);
         return subscriptions.filter(sub => {
-            const date = new Date(sub.nextPaymentDate);
-            // Check if day matches irrespective of month/year for recurring? 
-            // Or strictly check nextPaymentDate. 
-            // Better to check day of month logic for recurring.
+            const nextPayment = new Date(sub.nextPaymentDate);
+            if (isNaN(nextPayment.getTime())) return false;
 
-            const subDay = date.getDate();
+            const subDay = nextPayment.getDate();
 
-            // Logic for monthly: if billingCycle is MONTHLY, it repeats on subDay. 
-            // Logic for yearly: must match month and day.
             if (sub.billingCycle === 'MONTHLY') {
-                return subDay === day; // Simple recurrence
+                return subDay === day;
             } else if (sub.billingCycle === 'YEARLY') {
-                return subDay === day && date.getMonth() === currentMonth;
+                return subDay === day && nextPayment.getMonth() === currentMonth;
+            } else if (sub.billingCycle === 'WEEKLY') {
+                // Weekly: check if this day falls on the same weekday as nextPaymentDate
+                return targetDate.getDay() === nextPayment.getDay();
             }
-            return subDay === day && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+            return subDay === day && nextPayment.getMonth() === currentMonth && nextPayment.getFullYear() === currentYear;
         });
     };
 

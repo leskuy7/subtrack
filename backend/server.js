@@ -19,7 +19,7 @@ if (process.env.SENTRY_DSN) {
   });
   logger.info('Sentry initialized');
 } else {
-  logger.warn('SENTRY_DSN not set - Sentry disabled');
+  logger.warn('SENTRY_DSN not set — Sentry disabled');
 }
 
 const app = express();
@@ -47,6 +47,8 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
 
+// Preflight (OPTIONS) isteklerini tüm route'lar için aç (Express 5 uyumlu sözdizimi)
+app.options('{*path}', cors(corsOptions));
 app.use(cors(corsOptions));
 
 app.use(helmet({
@@ -57,7 +59,7 @@ app.use(helmet({
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: { message: 'Cok fazla istek gonderdiniz. Lutfen 15 dakika sonra tekrar deneyin.' },
+  message: { message: 'Çok fazla istek gönderdiniz. Lütfen 15 dakika sonra tekrar deneyin.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -65,7 +67,7 @@ const generalLimiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: { message: 'Cok fazla giris denemesi. Lutfen 15 dakika sonra tekrar deneyin.' },
+  message: { message: 'Çok fazla giriş denemesi. Lütfen 15 dakika sonra tekrar deneyin.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -73,7 +75,7 @@ const authLimiter = rateLimit({
 const emailLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 3,
-  message: { message: 'Cok fazla e-posta gonderimi. Lutfen 1 saat sonra tekrar deneyin.' },
+  message: { message: 'Çok fazla e-posta gönderimi. Lütfen 1 saat sonra tekrar deneyin.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -87,7 +89,7 @@ app.use((req, res, next) => {
   const originalEnd = res.end;
   res.end = function (...args) {
     const duration = Date.now() - start;
-    logger.info({ method: req.method, url: req.originalUrl, status: res.statusCode, duration: duration + 'ms' }, 'request');
+    logger.info({ method: req.method, url: req.originalUrl, status: res.statusCode, duration: `${duration}ms` }, 'request');
     originalEnd.apply(res, args);
   };
   next();
@@ -118,7 +120,7 @@ app.get('/api/health', (req, res) => {
 app.use((err, req, res, next) => {
   if (Sentry) Sentry.captureException(err);
   logger.error({ err, method: req.method, url: req.originalUrl }, 'Unhandled server error');
-  res.status(500).json({ message: 'Sunucu hatasi olustu' });
+  res.status(500).json({ message: 'Sunucu hatası oluştu' });
 });
 
 if (!process.env.JWT_SECRET) {

@@ -117,6 +117,7 @@ export default function NewSubscriptionPage() {
                                     className="w-full px-3 py-2.5 bg-input border border-default rounded-lg text-default placeholder-muted focus:outline-none focus:border-purple-600 text-sm"
                                     required
                                     step="0.01"
+                                    min="0.01"
                                     placeholder="99.99"
                                 />
                             </div>

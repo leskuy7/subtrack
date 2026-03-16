@@ -19,6 +19,29 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
+// Get single subscription by ID
+router.get('/:id', auth, async (req, res) => {
+    try {
+        const subscriptionId = parseInt(req.params.id);
+        if (isNaN(subscriptionId)) {
+            return res.status(400).json({ message: 'Geçersiz ID' });
+        }
+
+        const subscription = await prisma.subscription.findFirst({
+            where: { id: subscriptionId, userId: req.user.userId }
+        });
+
+        if (!subscription) {
+            return res.status(404).json({ message: 'Abonelik bulunamadı' });
+        }
+
+        res.json(subscription);
+    } catch (err) {
+        logger.error({ err, userId: req.user.userId }, 'Failed to fetch subscription');
+        res.status(500).json({ message: 'Sunucu hatası' });
+    }
+});
+
 // Add new subscription
 router.post('/', auth, validate(subscriptionSchema), async (req, res) => {
     try {
