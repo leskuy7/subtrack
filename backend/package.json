@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "node server.js",
-    "build": "npx prisma generate && npx prisma db push --accept-data-loss",
+    "build": "npx prisma generate",
     "dev": "nodemon server.js"
   },
   "dependencies": {
