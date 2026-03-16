@@ -5,4 +5,4 @@ node = "20"
 cmd = "cd backend && npm install && npx prisma generate"
 
 [start]
-cmd = "cd backend && npx prisma migrate deploy && node server.js"
+cmd = "cd backend && npx prisma db push && node server.js"
