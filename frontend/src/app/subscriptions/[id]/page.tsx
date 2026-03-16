@@ -30,13 +30,8 @@ export default function EditSubscriptionPage() {
     useEffect(() => {
         const fetchSubscription = async () => {
             try {
-                const res = await api.get(`/subscriptions`); // currently fetching all, ideally backend has get-one
-                // Since backend doesn't have get-one yet effectively, we filter from all or we should add get-one. 
-                // For now, let's filter from list to avoid backend change overhead if list is small. 
-                // Wait, checking routes/subscriptions.js... I only see GET / (all). 
-                // Efficient fix: Add GET /:id to backend or filter here. 
-                // Filter here is faster for now.
-                const sub = res.data.find((s: any) => s.id === parseInt(id as string));
+                const res = await api.get(`/subscriptions/${id}`);
+                const sub = res.data;
 
                 if (sub) {
                     setFormData({
@@ -101,7 +96,7 @@ export default function EditSubscriptionPage() {
             <Navbar />
             <div className="max-w-2xl mx-auto mt-10 text-center">
                 <p className="text-red-400 mb-4">{error}</p>
-                <Link href="/dashboard" className="text-purple-400 hover:text-purple-300">Daşboard'a Dön</Link>
+                <Link href="/dashboard" className="text-purple-400 hover:text-purple-300">Dashboard'a Dön</Link>
             </div>
         </div>
     );

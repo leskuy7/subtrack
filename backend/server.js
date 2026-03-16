@@ -57,7 +57,7 @@ const corsOptions = {
 };
 
 // Preflight (OPTIONS) isteklerini tüm route'lar için aç
-app.options('*', cors(corsOptions));
+app.options('{*path}', cors(corsOptions));
 app.use(cors(corsOptions));
 
 // Security Middleware (CORS'tan SONRA)
